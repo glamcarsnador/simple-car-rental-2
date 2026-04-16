@@ -39,14 +39,14 @@ ALTER TABLE public.reservations ENABLE ROW LEVEL SECURITY;
 
 -- Permissions (Define specific Policies/Roles)
 
--- Car Policies
-CREATE POLICY "Public cars are viewable by everyone" ON public.cars
-    FOR SELECT USING (true);
+-- Car Policies: Public access for all operations during development
+DROP POLICY IF EXISTS "Public cars are viewable by everyone" ON public.cars;
+CREATE POLICY "Public full access to cars" ON public.cars FOR ALL USING (true) WITH CHECK (true);
 
--- Client Policies
-CREATE POLICY "Authenticated users can manage clients" ON public.clients
-    FOR ALL USING (auth.role() = 'authenticated');
+-- Client Policies: Public access for all operations during development
+DROP POLICY IF EXISTS "Authenticated users can manage clients" ON public.clients;
+CREATE POLICY "Public full access to clients" ON public.clients FOR ALL USING (true) WITH CHECK (true);
 
--- Reservation Policies
-CREATE POLICY "Authenticated users can manage reservations" ON public.reservations
-    FOR ALL USING (auth.role() = 'authenticated');
+-- Reservation Policies: Public access for all operations during development
+DROP POLICY IF EXISTS "Authenticated users can manage reservations" ON public.reservations;
+CREATE POLICY "Public full access to reservations" ON public.reservations FOR ALL USING (true) WITH CHECK (true);
