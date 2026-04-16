@@ -6,6 +6,7 @@ function Cars() {
   const [cars, setCars] = useState([])
   const [loading, setLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
@@ -44,6 +45,8 @@ function Cars() {
       if (error) throw error
       setFormData({ brand: '', model: '', plate_number: '' })
       await fetchCars()
+      setToastMessage('Car saved successfully!')
+      setTimeout(() => setToastMessage(''), 3000)
     } catch (error) {
       alert('Error saving car: ' + error.message)
     } finally {
@@ -192,6 +195,14 @@ function Cars() {
         </div>
       </section>
       </div>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 bg-emerald-900/90 border border-emerald-500/50 text-emerald-100 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300 z-50">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-sm font-medium">{toastMessage}</span>
+        </div>
+      )}
     </div>
   )
 }
