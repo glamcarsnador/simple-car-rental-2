@@ -82,13 +82,7 @@ function Reservations() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
-      </div>
-    )
-  }
+
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -96,8 +90,17 @@ function Reservations() {
         <div>
           <h1 className="text-2xl font-semibold text-slate-100 italic tracking-wide">Reservations</h1>
           <p className="text-slate-400 text-sm mt-1">Manage and schedule car rental bookings.</p>
+          {loading && (
+            <div className="flex items-center gap-2 text-[10px] text-blue-400 font-medium animate-pulse mt-1">
+              <Loader2 size={10} className="animate-spin" />
+              Syncing with database...
+            </div>
+          )}
         </div>
       </header>
+
+      <div className={loading ? 'opacity-60 pointer-events-none transition-all duration-300' : 'transition-all duration-300'}>
+
 
       {/* New Reservation Form */}
       <section className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 shadow-sm">
@@ -244,6 +247,7 @@ function Reservations() {
           </table>
         </div>
       </section>
+      </div>
     </div>
   )
 }
