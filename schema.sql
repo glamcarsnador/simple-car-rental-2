@@ -1,8 +1,7 @@
 -- ==========================================
--- 1. Table Creation (using IF NOT EXISTS)
+-- 1. Table Creation (Safe Initial Setup)
 -- ==========================================
 
--- CARS TABLE
 CREATE TABLE IF NOT EXISTS public.cars (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -12,10 +11,9 @@ CREATE TABLE IF NOT EXISTS public.cars (
     year INTEGER,
     plate_number TEXT UNIQUE NOT NULL,
     status TEXT DEFAULT 'available' CHECK (status IN ('available', 'rented', 'maintenance')),
-    daily_rate NUMERIC(10, 2) DEFAULT 0 -- NOT NULL removed to fix your error
+    daily_rate NUMERIC(10, 2) DEFAULT 0 
 );
 
--- CLIENTS TABLE
 CREATE TABLE IF NOT EXISTS public.clients (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -26,7 +24,6 @@ CREATE TABLE IF NOT EXISTS public.clients (
     license_number TEXT UNIQUE
 );
 
--- RESERVATIONS TABLE
 CREATE TABLE IF NOT EXISTS public.reservations (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
@@ -40,25 +37,32 @@ CREATE TABLE IF NOT EXISTS public.reservations (
 );
 
 -- ==========================================
--- 2. Security Activation (Enable RLS)
+-- 2. Migration Section (The "Alter" Scripts)
+-- Run these to force updates on existing tables
+-- ==========================================
+
+-- Ensure daily_rate is optional (drops NOT NULL if it exists)
+ALTER TABLE public.cars ALTER COLUMN daily_rate DROP NOT NULL;
+
+-- Ensure soft-delete columns exist in case they were missed
+ALTER TABLE public.cars ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE public.clients ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+ALTER TABLE public.reservations ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL;
+
+-- ==========================================
+-- 3. Security & Permissions
 -- ==========================================
 
 ALTER TABLE public.cars ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.reservations ENABLE ROW LEVEL SECURITY;
 
--- ==========================================
--- 3. Permissions (Public Development Policies)
--- ==========================================
-
--- Car Policies
+-- Development Policies (Safe to re-run)
 DROP POLICY IF EXISTS "Public full access to cars" ON public.cars;
 CREATE POLICY "Public full access to cars" ON public.cars FOR ALL USING (true) WITH CHECK (true);
 
--- Client Policies
 DROP POLICY IF EXISTS "Public full access to clients" ON public.clients;
 CREATE POLICY "Public full access to clients" ON public.clients FOR ALL USING (true) WITH CHECK (true);
 
--- Reservation Policies
 DROP POLICY IF EXISTS "Public full access to reservations" ON public.reservations;
 CREATE POLICY "Public full access to reservations" ON public.reservations FOR ALL USING (true) WITH CHECK (true);
