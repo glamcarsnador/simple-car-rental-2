@@ -39,17 +39,6 @@ function Navbar() {
         ))}
       </div>
 
-      <div className="p-6 border-t border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs text-slate-400">
-            JD
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-medium text-slate-300">John Doe</span>
-            <span className="text-[10px] text-slate-500 uppercase tracking-tighter">Administrator</span>
-          </div>
-        </div>
-      </div>
     </nav>
   )
 }
