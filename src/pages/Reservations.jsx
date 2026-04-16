@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { Plus, Calendar, Loader2, AlertCircle } from 'lucide-react'
+import { Plus, Calendar, Loader2, AlertCircle, Trash2 } from 'lucide-react'
 
 function Reservations() {
   const [reservations, setReservations] = useState([])
@@ -25,9 +25,9 @@ function Reservations() {
     try {
       setLoading(true)
       const [resRes, carsRes, clientsRes] = await Promise.all([
-        supabase.from('reservations').select('*, cars(brand, model, plate_number), clients(full_name)').order('created_at', { ascending: false }),
-        supabase.from('cars').select('id, brand, model, plate_number, status').eq('status', 'available'),
-        supabase.from('clients').select('id, full_name')
+        supabase.from('reservations').select('*, cars(brand, model, plate_number), clients(full_name)').is('deleted_at', null).order('created_at', { ascending: false }),
+        supabase.from('cars').select('id, brand, model, plate_number, status').is('deleted_at', null).eq('status', 'available'),
+        supabase.from('clients').select('id, full_name').is('deleted_at', null)
       ])
 
       if (resRes.error) throw resRes.error
@@ -63,6 +63,22 @@ function Reservations() {
       alert('Error saving reservation: ' + error.message)
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  async function handleDelete(id) {
+    if (!confirm('Are you sure you want to delete this reservation?')) return
+
+    try {
+      const { error } = await supabase
+        .from('reservations')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id)
+
+      if (error) throw error
+      await fetchData()
+    } catch (error) {
+      alert('Error deleting reservation: ' + error.message)
     }
   }
 
@@ -174,6 +190,7 @@ function Reservations() {
                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Start Date</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">End Date</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-center">Status</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
@@ -211,6 +228,14 @@ function Reservations() {
                       }`}>
                         {res.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => handleDelete(res.id)}
+                        className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))
