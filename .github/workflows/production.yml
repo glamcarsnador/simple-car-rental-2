@@ -32,7 +32,11 @@ jobs:
         run: npm install
 
       - name: Build
+        # This is where we bridge your GitHub secrets/vars to your code
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
