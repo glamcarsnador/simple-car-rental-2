@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom' // 1. Changed import
 import MainLayout from './layouts/MainLayout'
 import Reservations from './pages/Reservations'
 import Cars from './pages/Cars'
@@ -6,8 +6,9 @@ import Clients from './pages/Clients'
 
 function App() {
   return (
-    // basename ensures all routes are relative to your subfolder
-    <BrowserRouter basename="/simple-car-rental-2">
+    // 2. Swapped BrowserRouter for HashRouter
+    // 3. Removed basename="/simple-car-rental-2" (Not needed for HashRouter)
+    <HashRouter>
       <MainLayout>
         <Routes>
           <Route path="/" element={<Reservations />} />
@@ -15,7 +16,8 @@ function App() {
           <Route path="/clients" element={<Clients />} />
         </Routes>
       </MainLayout>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
+
 export default App
