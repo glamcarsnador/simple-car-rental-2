@@ -6,7 +6,8 @@ import Clients from './pages/Clients'
 
 function App() {
   return (
-    <BrowserRouter>
+    // basename ensures all routes are relative to your subfolder
+    <BrowserRouter basename="/simple-car-rental-2">
       <MainLayout>
         <Routes>
           <Route path="/" element={<Reservations />} />
@@ -17,5 +18,4 @@ function App() {
     </BrowserRouter>
   )
 }
-
 export default App
